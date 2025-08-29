@@ -135,3 +135,40 @@ public class PupiletrasController {
         return "jugar";
     }
 }
+
+
+
+public class Juego {
+    private Tablero tablero;
+    private List<String> palabras;
+    private Set<String> encontradas;
+
+    public Juego(int filas, int columnas, List<String> palabras) {
+        this.tablero = new Tablero(filas, columnas, palabras);
+        this.palabras = palabras;
+        this.encontradas = new HashSet<>();
+    }
+
+    public char[][] getTablero() {
+        return tablero.getMatriz();
+    }
+
+    public List<String> getPalabrasRestantes() {
+        return palabras.stream()
+                .filter(p -> !encontradas.contains(p))
+                .toList();
+    }
+
+    public boolean buscar(int x1, int y1, int x2, int y2) {
+        String palabra = tablero.extraerPalabra(x1, y1, x2, y2);
+        if (palabras.contains(palabra)) {
+            encontradas.add(palabra);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean terminado() {
+        return encontradas.size() == palabras.size();
+    }
+}
