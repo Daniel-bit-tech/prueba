@@ -92,3 +92,46 @@ public class Main {
         }
     }
 }
+
+
+
+
+
+@Controller
+public class PupiletrasController {
+
+    private Juego juego; // se guarda el estado del juego
+
+    @GetMapping("/pupiletras")
+    public String configurarJuego(Model model) {
+        return "config"; // muestra el formulario inicial
+    }
+
+    @PostMapping("/jugar")
+    public String iniciarJuego(@RequestParam int filas,
+                               @RequestParam int columnas,
+                               @RequestParam String palabras,
+                               Model model) {
+        List<String> listaPalabras = Arrays.asList(palabras.split(" "));
+        juego = new Juego(filas, columnas, listaPalabras);
+        model.addAttribute("tablero", juego.getTablero());
+        model.addAttribute("palabras", listaPalabras);
+        return "jugar";
+    }
+
+    @PostMapping("/buscar")
+    public String buscarPalabra(@RequestParam int x1, @RequestParam int y1,
+                                @RequestParam int x2, @RequestParam int y2,
+                                Model model) {
+        boolean encontrada = juego.buscar(x1, y1, x2, y2);
+        model.addAttribute("tablero", juego.getTablero());
+        model.addAttribute("palabras", juego.getPalabrasRestantes());
+        model.addAttribute("mensaje", encontrada ? "¡Palabra encontrada!" : "No se encontró la palabra.");
+
+        if (juego.terminado()) {
+            model.addAttribute("mensajeFinal", "¡Has encontrado todas las palabras!");
+        }
+
+        return "jugar";
+    }
+}
