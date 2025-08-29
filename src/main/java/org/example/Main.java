@@ -228,3 +228,102 @@ public class Tablero {
 <ul>
   <li th:each="pal : ${palabras}" th:text="${pal}"></li>
 </ul>
+
+
+
+Listo 💡. Te paso la solución completa del controlador corregido para que tu tabla sí se vea en jugar.html.
+El cambio clave es que convierto el char[][] (que Thymeleaf no sabe iterar) a Character[][] antes de enviarlo al modelo.
+
+
+---
+
+📄 PupiletrasController.java
+
+package com.example.pupiletras.controller;
+
+import com.example.pupiletras.model.Juego;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.List;
+
+@Controller
+public class PupiletrasController {
+
+    private Juego juego; // guardamos el estado del juego en memoria
+
+    @GetMapping("/pupiletras")
+    public String configurarJuego() {
+        return "config"; // formulario inicial
+    }
+
+    @PostMapping("/jugar")
+    public String iniciarJuego(@RequestParam int filas,
+                               @RequestParam int columnas,
+                               @RequestParam String palabras,
+                               Model model) {
+
+        List<String> listaPalabras = Arrays.asList(palabras.split(" "));
+        juego = new Juego(filas, columnas, listaPalabras);
+
+        // 👇 Convertimos char[][] a Character[][] para que Thymeleaf pueda iterar
+        Character[][] tablero = convertir(juego.getTablero());
+
+        model.addAttribute("tablero", tablero);
+        model.addAttribute("palabras", listaPalabras);
+
+        return "jugar";
+    }
+
+    @PostMapping("/buscar")
+    public String buscarPalabra(@RequestParam int x1, @RequestParam int y1,
+                                @RequestParam int x2, @RequestParam int y2,
+                                Model model) {
+
+        boolean encontrada = juego.buscar(x1, y1, x2, y2);
+
+        // 👇 Volvemos a pasar el tablero convertido
+        Character[][] tablero = convertir(juego.getTablero());
+
+        model.addAttribute("tablero", tablero);
+        model.addAttribute("palabras", juego.getPalabrasRestantes());
+        model.addAttribute("mensaje", encontrada ? "¡Palabra encontrada!" : "No se encontró la palabra.");
+
+        if (juego.terminado()) {
+            model.addAttribute("mensajeFinal", "¡Has encontrado todas las palabras!");
+        }
+
+        return "jugar";
+    }
+
+    // 🔄 Método para convertir char[][] → Character[][]
+    private Character[][] convertir(char[][] matriz) {
+        Character[][] resultado = new Character[matriz.length][];
+        for (int i = 0; i < matriz.length; i++) {
+            resultado[i] = new Character[matriz[i].length];
+            for (int j = 0; j < matriz[i].length; j++) {
+                resultado[i][j] = matriz[i][j];
+            }
+        }
+        return resultado;
+    }
+}
+
+
+---
+
+✅ Qué cambia
+
+Antes estabas enviando char[][] al modelo → Thymeleaf no lo iteraba.
+
+Ahora envío Character[][] (objetos, no primitivos) → Thymeleaf puede iterar y la tabla se renderiza correctamente.
+
+
+
+---
+
+👉 ¿Quieres que también te prepare el config.html (pantalla inicial con formulario de filas, columnas y palabras) para que completes todo el flujo?
+
+
