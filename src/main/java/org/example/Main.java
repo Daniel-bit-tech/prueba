@@ -172,3 +172,27 @@ public class Juego {
         return encontradas.size() == palabras.size();
     }
 }
+
+
+public class Tablero {
+    private char[][] matriz;
+
+    public Tablero(int filas, int columnas, List<String> palabras) {
+        matriz = new char[filas][columnas];
+        generarTablero(palabras);
+    }
+
+    private void generarTablero(List<String> palabras) {
+        // Lógica para ubicar palabras aleatoriamente en distintas direcciones
+        // y rellenar espacios con letras random
+    }
+
+    public char[][] getMatriz() {
+        return matriz;
+    }
+
+    public String extraerPalabra(int x1, int y1, int x2, int y2) {
+        // Devolver string formado entre coordenadas inicio-fin
+        return "...";
+    }
+}
