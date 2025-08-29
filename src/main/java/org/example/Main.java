@@ -196,3 +196,35 @@ public class Tablero {
         return "...";
     }
 }
+
+
+
+<form action="/jugar" method="post">
+  Filas: <input type="number" name="filas">
+  Columnas: <input type="number" name="columnas">
+  Palabras (separadas por espacio): <input type="text" name="palabras">
+  <button type="submit">Iniciar Juego</button>
+</form>
+
+
+<table>
+  <tr th:each="fila : ${tablero}">
+    <td th:each="celda : ${fila}" th:text="${celda}"></td>
+  </tr>
+</table>
+
+<p th:text="${mensaje}"></p>
+<p th:text="${mensajeFinal}"></p>
+
+<form action="/buscar" method="post">
+  X1: <input type="number" name="x1">
+  Y1: <input type="number" name="y1">
+  X2: <input type="number" name="x2">
+  Y2: <input type="number" name="y2">
+  <button type="submit">Buscar</button>
+</form>
+
+<h3>Palabras restantes:</h3>
+<ul>
+  <li th:each="pal : ${palabras}" th:text="${pal}"></li>
+</ul>
