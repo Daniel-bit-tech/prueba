@@ -166,3 +166,38 @@ public interface PalabraRepository extends JpaRepository<Palabra, Integer> {
     List<Palabra> findByJuegoId(Integer juegoId);
     List<Palabra> findByEncontradaTrue();
 }
+
+
+
+@Autowired
+private JuegoRepository juegoRepository;
+
+@Autowired
+private PalabraRepository palabraRepository;
+
+@GetMapping("/guardarJuego")
+public String guardarJuego(@RequestParam int filas,
+                           @RequestParam int columnas,
+                           @RequestParam String palabras) {
+
+    Juego juego = new Juego();
+    juego.setFilas(filas);
+    juego.setColumnas(columnas);
+    juego.setEstado("conectado");
+
+    List<Palabra> listaPalabras = Arrays.stream(palabras.split(" "))
+            .map(p -> {
+                Palabra palabra = new Palabra();
+                palabra.setTexto(p.toUpperCase());
+                palabra.setEncontrada(false);
+                palabra.setJuego(juego);
+                return palabra;
+            })
+            .toList();
+
+    juego.setPalabras(listaPalabras);
+
+    juegoRepository.save(juego);
+
+    return "redirect:/jugar?id=" + juego.getId();
+}
