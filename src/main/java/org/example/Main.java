@@ -95,3 +95,27 @@ public class Main {
 
 
 
+
+package com.example.clase2gtics.entity;
+
+import jakarta.persistence.*;
+import java.util.List;
+
+@Entity
+public class Juego {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    private int filas;
+    private int columnas;
+
+    private String estado; // "conectado" o "desconectado"
+
+    @OneToMany(mappedBy = "juego", cascade = CascadeType.ALL)
+    private List<Palabra> palabras;
+
+    // getters y setters
+}
+
