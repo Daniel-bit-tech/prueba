@@ -201,3 +201,21 @@ public String guardarJuego(@RequestParam int filas,
 
     return "redirect:/jugar?id=" + juego.getId();
 }
+
+
+
+<!-- Modo desconectado -->
+<form action="/guardarJuego" method="get">
+    <input type="hidden" name="filas" value="10">
+    <input type="hidden" name="columnas" value="10">
+    <input type="hidden" name="palabras" value="JAVA SPRING HTML CSS">
+    <button type="submit">Modo desconectado</button>
+</form>
+
+<!-- Modo conectado -->
+<form action="/guardarJuego" method="get">
+    <input type="hidden" name="filas" value="10">
+    <input type="hidden" name="columnas" value="10">
+    <input type="hidden" name="palabras" value="JAVA SPRING HTML CSS">
+    <button type="submit">Modo conectado</button>
+</form>
