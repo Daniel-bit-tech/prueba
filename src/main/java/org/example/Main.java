@@ -142,3 +142,27 @@ public class Palabra {
 
     // getters y setters
 }
+
+
+
+package com.example.clase2gtics.repository;
+
+import com.example.clase2gtics.entity.Juego;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface JuegoRepository extends JpaRepository<Juego, Integer> {
+    Juego findByEstado(String estado);
+}
+
+
+package com.example.clase2gtics.repository;
+
+import com.example.clase2gtics.entity.Palabra;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface PalabraRepository extends JpaRepository<Palabra, Integer> {
+    List<Palabra> findByJuegoId(Integer juegoId);
+    List<Palabra> findByEncontradaTrue();
+}
