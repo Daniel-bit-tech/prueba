@@ -119,3 +119,26 @@ public class Juego {
     // getters y setters
 }
 
+
+
+
+package com.example.clase2gtics.entity;
+
+import jakarta.persistence.*;
+
+@Entity
+public class Palabra {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    private String texto;
+    private boolean encontrada;
+
+    @ManyToOne
+    @JoinColumn(name = "juego_id")
+    private Juego juego;
+
+    // getters y setters
+}
