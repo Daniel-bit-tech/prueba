@@ -1,3 +1,39 @@
+package com.stfgames.model;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = "Puzzle")
+public class Puzzle {
+
+    @Id
+    @Column(name = "stf_game_board_structure")
+    private int stfGameBoardStructure;
+
+    @Lob
+    @Column(name = "image")
+    private byte[] image;
+
+    // Getters y setters
+    public int getStfGameBoardStructure() {
+        return stfGameBoardStructure;
+    }
+
+    public void setStfGameBoardStructure(int stfGameBoardStructure) {
+        this.stfGameBoardStructure = stfGameBoardStructure;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
+}
+
+
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
