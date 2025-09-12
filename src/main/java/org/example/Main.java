@@ -1,5 +1,55 @@
 package com.stfgames.model;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "Puzzle")
+public class Puzzle {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    // Estado del tablero en entero
+    @Column(name = "stf_game_board_structure")
+    private int stfGameBoardStructure;
+
+    // Imagen como BLOB
+    @Lob
+    @Column(name = "image")
+    private byte[] image;
+
+    public Long getId() {
+        return id;
+    }
+
+    public int getStfGameBoardStructure() {
+        return stfGameBoardStructure;
+    }
+
+    public void setStfGameBoardStructure(int stfGameBoardStructure) {
+        this.stfGameBoardStructure = stfGameBoardStructure;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
+}
+
+
+
+
+
+
+
+
+
+package com.stfgames.model;
+
 import jakarta.persistence.*;
 
 @Entity
