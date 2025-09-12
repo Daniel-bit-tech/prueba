@@ -1,3 +1,107 @@
+public class PuzzleLogic {
+
+    private int size; // ej: 3 para tablero 3x3
+    private int[][] board;
+
+    public PuzzleLogic(int size) {
+        this.size = size;
+        initBoard();
+    }
+
+    // Inicializar tablero ordenado
+    private void initBoard() {
+        board = new int[size][size];
+        int num = 1;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                board[i][j] = num;
+                num++;
+            }
+        }
+        board[size - 1][size - 1] = 0; // última casilla vacía
+    }
+
+    // Serializar tablero a String o int
+    public String serializeBoard() {
+        StringBuilder sb = new StringBuilder();
+        for (int[] row : board) {
+            for (int val : row) {
+                sb.append(val);
+            }
+        }
+        return sb.toString();
+    }
+
+    // Desordenar tablero con una secuencia fija
+    public void shuffle() {
+        // Ejemplo simple: mover la pieza izquierda del vacío 3 veces
+        move("LEFT");
+        move("UP");
+        move("RIGHT");
+        // (Aquí defines los 8 pasos obligatorios que pide tu enunciado)
+    }
+
+    // Mover ficha
+    public boolean move(String direction) {
+        int[] empty = findEmpty();
+        int i = empty[0], j = empty[1];
+        switch (direction) {
+            case "UP":
+                if (i > 0) swap(i, j, i - 1, j);
+                break;
+            case "DOWN":
+                if (i < size - 1) swap(i, j, i + 1, j);
+                break;
+            case "LEFT":
+                if (j > 0) swap(i, j, i, j - 1);
+                break;
+            case "RIGHT":
+                if (j < size - 1) swap(i, j, i, j + 1);
+                break;
+            default:
+                return false;
+        }
+        return true;
+    }
+
+    // Buscar vacío
+    private int[] findEmpty() {
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (board[i][j] == 0) return new int[]{i, j};
+            }
+        }
+        return null;
+    }
+
+    private void swap(int i1, int j1, int i2, int j2) {
+        int temp = board[i1][j1];
+        board[i1][j1] = board[i2][j2];
+        board[i2][j2] = temp;
+    }
+
+    // Verificar si está resuelto
+    public boolean isSolved() {
+        int num = 1;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (i == size - 1 && j == size - 1) {
+                    if (board[i][j] != 0) return false;
+                } else {
+                    if (board[i][j] != num) return false;
+                    num++;
+                }
+            }
+        }
+        return true;
+    }
+}
+
+
+
+
+
+
 package com.stfgames.service;
 
 import com.stfgames.model.Puzzle;
