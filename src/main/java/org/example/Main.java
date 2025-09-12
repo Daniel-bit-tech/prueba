@@ -1,3 +1,47 @@
+package com.stfgames.service;
+
+import com.stfgames.model.Puzzle;
+import com.stfgames.repository.PuzzleRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.Optional;
+
+@Service
+public class PuzzleService {
+
+    private final PuzzleRepository puzzleRepository;
+
+    public PuzzleService(PuzzleRepository puzzleRepository) {
+        this.puzzleRepository = puzzleRepository;
+    }
+
+    public Puzzle obtenerPuzzle() {
+        // Usamos siempre el registro ID=1
+        Optional<Puzzle> optional = puzzleRepository.findById(1L);
+        return optional.orElseGet(() -> {
+            Puzzle nuevo = new Puzzle();
+            nuevo.setStfGameBoardStructure(12345678); // estado inicial codificado en int
+            return puzzleRepository.save(nuevo);
+        });
+    }
+
+    public void reiniciarPuzzle() {
+        Puzzle puzzle = obtenerPuzzle();
+        puzzle.setStfGameBoardStructure(12345678); // estado inicial
+        puzzleRepository.save(puzzle);
+    }
+
+    public void actualizarImagen(MultipartFile file) throws IOException {
+        Puzzle puzzle = obtenerPuzzle();
+        puzzle.setImage(file.getBytes());
+        puzzleRepository.save(puzzle);
+    }
+}
+
+
+
 package com.stfgames.repository;
 
 import com.stfgames.model.Puzzle;
