@@ -219,3 +219,13 @@ public String guardarJuego(@RequestParam int filas,
     <input type="hidden" name="palabras" value="JAVA SPRING HTML CSS">
     <button type="submit">Modo conectado</button>
 </form>
+
+
+
+
+public class PuzzleDTO {
+    private String stfGameBoardStructure;
+    private String image; // codificada en base64 o ruta de la imagen
+
+    // getters y setters
+}
