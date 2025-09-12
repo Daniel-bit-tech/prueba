@@ -1,3 +1,35 @@
+@PostMapping("/mover")
+public String moverFicha(@RequestParam("movimiento") String movimiento,
+                         RedirectAttributes redirectAttributes) {
+    Puzzle puzzle = puzzleService.obtenerPuzzle();
+
+    // Reconstruir el tablero desde la cadena almacenada
+    PuzzleLogic logic = new PuzzleLogic(3); // ejemplo tablero 3x3
+    logic.deserializeBoard(puzzle.getStfGameBoardStructure());
+
+    // Hacer movimiento
+    logic.move(movimiento);
+
+    // Guardar nuevo estado
+    puzzle.setStfGameBoardStructure(Integer.parseInt(logic.serializeBoard()));
+    puzzleService.guardar(puzzle);
+
+    if (logic.isSolved()) {
+        redirectAttributes.addFlashAttribute("mensaje", "¡Juego terminado!");
+    }
+
+    return "redirect:/puzzle";
+}
+
+
+
+
+
+
+
+
+
+
 public class PuzzleLogic {
 
     private int size; // ej: 3 para tablero 3x3
