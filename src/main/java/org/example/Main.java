@@ -1,3 +1,50 @@
+@Controller
+public class PuzzleController {
+
+    private int[] tablero = {1,2,3,4,5,6,7,0,8}; // estado inicial
+
+    @GetMapping("/puzzle")
+    public String mostrarPuzzle(Model model) {
+        model.addAttribute("tablero", tablero);
+        return "puzzle";
+    }
+
+    @PostMapping("/mover")
+    public String moverFicha(@RequestParam("pos") int pos, RedirectAttributes redirectAttributes) {
+        int emptyIndex = -1;
+        for (int i = 0; i < tablero.length; i++) {
+            if (tablero[i] == 0) {
+                emptyIndex = i;
+                break;
+            }
+        }
+
+        // Validar si es adyacente
+        if (esAdyacente(pos, emptyIndex)) {
+            int temp = tablero[pos];
+            tablero[pos] = tablero[emptyIndex];
+            tablero[emptyIndex] = temp;
+        } else {
+            redirectAttributes.addFlashAttribute("mensaje", "Movimiento inválido");
+        }
+
+        return "redirect:/puzzle";
+    }
+
+    private boolean esAdyacente(int pos, int empty) {
+        int size = 3; // puzzle 3x3
+        int row = pos / size, col = pos % size;
+        int emptyRow = empty / size, emptyCol = empty % size;
+        return (Math.abs(row - emptyRow) + Math.abs(col - emptyCol)) == 1;
+    }
+}
+
+
+
+
+
+
+
 @GetMapping("/puzzle")
 public String mostrarPuzzle(Model model) {
     Puzzle puzzle = puzzleService.obtenerPuzzle(); // trae la imagen
