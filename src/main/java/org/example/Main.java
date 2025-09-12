@@ -1,3 +1,68 @@
+@GetMapping("/puzzle")
+public String mostrarPuzzle(Model model) {
+    Puzzle puzzle = puzzleService.obtenerPuzzle(); // tu entidad con imagen y board
+    String base64Image = Base64.getEncoder().encodeToString(puzzle.getImage());
+
+    model.addAttribute("imagen", base64Image);
+    model.addAttribute("tablero", "123406758"); // tablero desordenado (0 = espacio vacío)
+    return "puzzle";
+}
+
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Puzzle</title>
+    <style>
+        .puzzle {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 2px;
+        }
+        .piece {
+            width: 100px;
+            height: 100px;
+            background-image: url('data:image/png;base64,[[${imagen}]]');
+            background-size: 300px 300px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Rompecabezas</h1>
+
+<div class="puzzle">
+    <div th:replace="fragments/piece :: piece(0,0,${imagen})"></div>
+    <div th:replace="fragments/piece :: piece(1,0,${imagen})"></div>
+    <div th:replace="fragments/piece :: piece(2,0,${imagen})"></div>
+    <div th:replace="fragments/piece :: piece(0,1,${imagen})"></div>
+    <div th:replace="fragments/piece :: piece(1,1,${imagen})"></div>
+    <div th:replace="fragments/piece :: piece(2,1,${imagen})"></div>
+    <div th:replace="fragments/piece :: piece(0,2,${imagen})"></div>
+    <div th:replace="fragments/piece :: piece(1,2,${imagen})"></div>
+    <div th:replace="fragments/piece :: piece(2,2,${imagen})"></div>
+</div>
+
+</body>
+</html>
+
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:fragment="piece(x,y,img)"
+         class="piece"
+         th:style="'background-position: calc(-100px * ' + ${x} + ') calc(-100px * ' + ${y} + '); background-image:url(\'data:image/png;base64,'+${img}+'\')'">
+    </div>
+</body>
+</html>
+
+
+
+
+#############
+
 package com.stfgames.model;
 
 import javax.persistence.*;
