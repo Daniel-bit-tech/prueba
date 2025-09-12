@@ -295,3 +295,21 @@ public class PuzzleController {
         return "redirect:/puzzle";
     }
 }
+
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="header">
+    <h1>Rompecabezas Deslizante</h1>
+</div>
+
+<div th:fragment="mensaje">
+    <div th:if="${mensaje}">
+        <p th:text="${mensaje}" class="alert alert-info"></p>
+    </div>
+</div>
+
+</body>
+</html>
