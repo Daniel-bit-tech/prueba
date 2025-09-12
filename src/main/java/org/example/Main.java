@@ -1,3 +1,29 @@
+package com.stfgames.dto;
+
+public class PuzzleDTO {
+    private int stfGameBoardStructure;
+    private String imageBase64; // imagen lista para Thymeleaf
+
+    public int getStfGameBoardStructure() {
+        return stfGameBoardStructure;
+    }
+
+    public void setStfGameBoardStructure(int stfGameBoardStructure) {
+        this.stfGameBoardStructure = stfGameBoardStructure;
+    }
+
+    public String getImageBase64() {
+        return imageBase64;
+    }
+
+    public void setImageBase64(String imageBase64) {
+        this.imageBase64 = imageBase64;
+    }
+}
+
+
+
+
 package com.stfgames.service;
 
 import com.stfgames.model.Puzzle;
