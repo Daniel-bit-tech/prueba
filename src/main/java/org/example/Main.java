@@ -229,3 +229,28 @@ public class PuzzleDTO {
 
     // getters y setters
 }
+
+
+
+package com.stfgames.dto;
+
+public class PuzzleDTO {
+    private String stfGameBoardStructure;
+    private String image; // codificada en base64 o ruta de la imagen
+
+    public String getStfGameBoardStructure() {
+        return stfGameBoardStructure;
+    }
+
+    public void setStfGameBoardStructure(String stfGameBoardStructure) {
+        this.stfGameBoardStructure = stfGameBoardStructure;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+}
