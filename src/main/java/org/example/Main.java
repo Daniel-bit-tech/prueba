@@ -1,3 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Rompecabezas</title>
+    <style>
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 80px);
+            grid-template-rows: repeat(3, 80px);
+            gap: 5px;
+        }
+        .cell {
+            width: 80px;
+            height: 80px;
+            background-color: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+            border: 1px solid #444;
+        }
+        .empty {
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="fragments :: header"></div>
+<div th:replace="fragments :: mensaje"></div>
+
+<h2>Tablero</h2>
+
+<div class="board">
+    <!-- Pintar el tablero -->
+    <div th:each="num,iter : ${#strings.arraySplit(puzzleDTO.stfGameBoardStructure, '')}"
+         th:class="${num == '0'} ? 'cell empty' : 'cell'"
+         th:text="${num != '0'} ? num : ''">
+    </div>
+</div>
+
+<h3>Movimientos</h3>
+<form th:action="@{/mover}" method="post" style="display:inline;">
+    <button type="submit" name="movimiento" value="UP">Arriba</button>
+</form>
+<form th:action="@{/mover}" method="post" style="display:inline;">
+    <button type="submit" name="movimiento" value="DOWN">Abajo</button>
+</form>
+<form th:action="@{/mover}" method="post" style="display:inline;">
+    <button type="submit" name="movimiento" value="LEFT">Izquierda</button>
+</form>
+<form th:action="@{/mover}" method="post" style="display:inline;">
+    <button type="submit" name="movimiento" value="RIGHT">Derecha</button>
+</form>
+
+</body>
+</html>
+
+
+
+
+
+
 @PostMapping("/mover")
 public String moverFicha(@RequestParam("movimiento") String movimiento,
                          RedirectAttributes redirectAttributes) {
