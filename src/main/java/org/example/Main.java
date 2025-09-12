@@ -313,3 +313,36 @@ public class PuzzleController {
 
 </body>
 </html>
+
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Rompecabezas</title>
+</head>
+<body>
+
+<!-- Fragmento de cabecera -->
+<div th:replace="fragments :: header"></div>
+
+<!-- Fragmento de mensaje -->
+<div th:replace="fragments :: mensaje"></div>
+
+<!-- Mostrar imagen actual -->
+<img th:src="${puzzle.image}" alt="Imagen del puzzle" width="200"/>
+
+<!-- Mostrar estado actual del tablero -->
+<p><strong>Estado del tablero:</strong> <span th:text="${puzzle.stfGameBoardStructure}"></span></p>
+
+<!-- Botones de acción -->
+<form th:action="@{/reiniciar}" method="post">
+    <button type="submit">Reiniciar juego</button>
+</form>
+
+<form th:action="@{/subirImagen}" method="post">
+    <input type="text" name="nuevaImagen" placeholder="Ruta o URL de la nueva imagen"/>
+    <button type="submit">Actualizar imagen</button>
+</form>
+
+</body>
+</html>
