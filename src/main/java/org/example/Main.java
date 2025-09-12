@@ -1,3 +1,227 @@
+package com.stfgames.model;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = "Puzzle")
+public class Puzzle {
+
+    @Id
+    @Column(name = "stf_game_board_structure")
+    private int stfGameBoardStructure;
+
+    @Lob
+    @Column(name = "image")
+    private byte[] image;
+
+    public int getStfGameBoardStructure() {
+        return stfGameBoardStructure;
+    }
+
+    public void setStfGameBoardStructure(int stfGameBoardStructure) {
+        this.stfGameBoardStructure = stfGameBoardStructure;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
+}
+
+package com.stfgames.dto;
+
+public class PuzzleDTO {
+    private String tableroOrdenado;
+    private String tableroDesordenado;
+    private String solucion;
+    private String imagenBase64;
+
+    public String getTableroOrdenado() {
+        return tableroOrdenado;
+    }
+
+    public void setTableroOrdenado(String tableroOrdenado) {
+        this.tableroOrdenado = tableroOrdenado;
+    }
+
+    public String getTableroDesordenado() {
+        return tableroDesordenado;
+    }
+
+    public void setTableroDesordenado(String tableroDesordenado) {
+        this.tableroDesordenado = tableroDesordenado;
+    }
+
+    public String getSolucion() {
+        return solucion;
+    }
+
+    public void setSolucion(String solucion) {
+        this.solucion = solucion;
+    }
+
+    public String getImagenBase64() {
+        return imagenBase64;
+    }
+
+    public void setImagenBase64(String imagenBase64) {
+        this.imagenBase64 = imagenBase64;
+    }
+}
+
+
+package com.stfgames.service;
+
+import com.stfgames.model.Puzzle;
+import com.stfgames.repository.PuzzleRepository;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Base64;
+
+@Service
+public class PuzzleService {
+
+    private final PuzzleRepository puzzleRepository;
+
+    public PuzzleService(PuzzleRepository puzzleRepository) {
+        this.puzzleRepository = puzzleRepository;
+    }
+
+    public Puzzle obtenerPuzzle() {
+        return puzzleRepository.findById(12345678)
+                .orElseGet(() -> {
+                    Puzzle nuevo = new Puzzle();
+                    nuevo.setStfGameBoardStructure(12345678);
+                    try {
+                        ClassPathResource resource = new ClassPathResource("static/images/default.jpg");
+                        byte[] defaultImage = Files.readAllBytes(resource.getFile().toPath());
+                        nuevo.setImage(defaultImage);
+                    } catch (IOException e) {
+                        System.out.println("No se pudo cargar la imagen por defecto");
+                    }
+                    return puzzleRepository.save(nuevo);
+                });
+    }
+
+    public String convertirImagenBase64(byte[] data) {
+        return data != null ? Base64.getEncoder().encodeToString(data) : null;
+    }
+
+    public void actualizarImagen(MultipartFile file) throws IOException {
+        Puzzle puzzle = obtenerPuzzle();
+        puzzle.setImage(file.getBytes());
+        puzzleRepository.save(puzzle);
+    }
+}
+
+
+
+package com.stfgames.controller;
+
+import com.stfgames.dto.PuzzleDTO;
+import com.stfgames.model.Puzzle;
+import com.stfgames.service.PuzzleService;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+@Controller
+public class PuzzleController {
+
+    private final PuzzleService puzzleService;
+
+    public PuzzleController(PuzzleService puzzleService) {
+        this.puzzleService = puzzleService;
+    }
+
+    @GetMapping("/puzzle")
+    public String mostrarPuzzle(Model model) {
+        Puzzle puzzle = puzzleService.obtenerPuzzle();
+
+        PuzzleDTO dto = new PuzzleDTO();
+        dto.setTableroOrdenado("123456780");       // tablero inicial
+        dto.setTableroDesordenado("123406758");    // un estado desordenado fijo
+        dto.setSolucion("RIGHT, DOWN, LEFT, UP, RIGHT, UP, LEFT, DOWN"); // secuencia fija
+        dto.setImagenBase64(puzzleService.convertirImagenBase64(puzzle.getImage()));
+
+        model.addAttribute("puzzleDTO", dto);
+        return "puzzle";
+    }
+
+    @PostMapping("/subirImagen")
+    public String subirImagen(@RequestParam("file") MultipartFile file,
+                              RedirectAttributes redirectAttributes) {
+        try {
+            puzzleService.actualizarImagen(file);
+            redirectAttributes.addFlashAttribute("mensaje", "Imagen actualizada correctamente.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensaje", "Error al subir la imagen.");
+        }
+        return "redirect:/puzzle";
+    }
+}
+
+
+
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="header">
+    <h1>Rompecabezas Deslizante</h1>
+    <hr>
+</div>
+
+<div th:fragment="mensaje">
+    <div th:if="${mensaje}">
+        <p th:text="${mensaje}" style="color: blue; font-weight: bold;"></p>
+    </div>
+</div>
+
+</body>
+</html>
+
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Puzzle</title>
+</head>
+<body>
+
+<div th:replace="fragments :: header"></div>
+<div th:replace="fragments :: mensaje"></div>
+
+<!-- Imagen -->
+<div th:if="${puzzleDTO.imagenBase64}">
+    <img th:src="'data:image/jpeg;base64,' + ${puzzleDTO.imagenBase64}" width="200"/>
+</div>
+
+<!-- Estados -->
+<p><strong>Estado ordenado:</strong> <span th:text="${puzzleDTO.tableroOrdenado}"></span></p>
+<p><strong>Estado desordenado:</strong> <span th:text="${puzzleDTO.tableroDesordenado}"></span></p>
+<p><strong>Solución (8 pasos):</strong> <span th:text="${puzzleDTO.solucion}"></span></p>
+
+<!-- Subir nueva imagen -->
+<form th:action="@{/subirImagen}" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" accept="image/jpeg"/>
+    <button type="submit">Actualizar imagen</button>
+</form>
+
+</body>
+</html>
 
 
 
@@ -12,7 +236,7 @@
 
 
 
-
+$$$$$$$$$$$$$$$$$$$$$
 
 public class PuzzleLogic {
 
