@@ -1,6 +1,110 @@
 @Controller
 public class PuzzleController {
 
+    // Tablero inicial desordenado
+    private int[] tablero = {1,2,3,4,5,6,7,0,8}; // 0 = vacío
+
+    @Autowired
+    private PuzzleService puzzleService;
+
+    @GetMapping("/puzzle")
+    public String mostrarPuzzle(Model model) {
+        Puzzle puzzle = puzzleService.obtenerPuzzle(); // trae la imagen desde la BD
+        String base64Image = Base64.getEncoder().encodeToString(puzzle.getImage());
+
+        model.addAttribute("imagen", base64Image);
+        model.addAttribute("tablero", tablero);
+        return "puzzle";
+    }
+
+    @PostMapping("/mover")
+    public String moverFicha(@RequestParam("pos") int pos, RedirectAttributes redirectAttributes) {
+        int emptyIndex = -1;
+        for (int i = 0; i < tablero.length; i++) {
+            if (tablero[i] == 0) {
+                emptyIndex = i;
+                break;
+            }
+        }
+
+        // Validar si es adyacente al espacio vacío
+        if (esAdyacente(pos, emptyIndex)) {
+            int temp = tablero[pos];
+            tablero[pos] = tablero[emptyIndex];
+            tablero[emptyIndex] = temp;
+        } else {
+            redirectAttributes.addFlashAttribute("mensaje", "Movimiento inválido");
+        }
+
+        return "redirect:/puzzle";
+    }
+
+    private boolean esAdyacente(int pos, int empty) {
+        int size = 3; // puzzle 3x3
+        int row = pos / size, col = pos % size;
+        int emptyRow = empty / size, emptyCol = empty % size;
+        return (Math.abs(row - emptyRow) + Math.abs(col - emptyCol)) == 1;
+    }
+}
+
+
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Rompecabezas</title>
+    <style>
+        .puzzle {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 2px;
+        }
+        .piece {
+            width: 100px;
+            height: 100px;
+            border: 1px solid black;
+            background-image: url("data:image/png;base64,[[${imagen}]]");
+            background-size: 300px 300px; /* 3x3 = 300px */
+        }
+        .empty {
+            background: #eee; /* casilla vacía */
+        }
+    </style>
+</head>
+<body>
+<h1>Rompecabezas</h1>
+
+<div class="puzzle">
+    <form method="post" action="/mover" th:each="val,iter : ${tablero}">
+        <input type="hidden" name="pos" th:value="${iter.index}"/>
+        <button type="submit"
+                th:class="${val == 0} ? 'piece empty' : 'piece'"
+                th:style="${val != 0} ?
+                  'background-position: calc(-100px * ' + ((${val}-1)%3) + ') calc(-100px * ' + ((${val}-1)/3)) + ');' : ''">
+        </button>
+    </form>
+</div>
+
+<div th:if="${mensaje}">
+    <p th:text="${mensaje}"></p>
+</div>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+@Controller
+public class PuzzleController {
+
     private int[] tablero = {1,2,3,4,5,6,7,0,8}; // estado inicial
 
     @GetMapping("/puzzle")
