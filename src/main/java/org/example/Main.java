@@ -1,3 +1,58 @@
+package com.stfgames.service;
+
+import com.stfgames.model.Puzzle;
+import com.stfgames.repository.PuzzleRepository;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+
+@Service
+public class PuzzleService {
+
+    private final PuzzleRepository puzzleRepository;
+
+    public PuzzleService(PuzzleRepository puzzleRepository) {
+        this.puzzleRepository = puzzleRepository;
+    }
+
+    public Puzzle obtenerPuzzle() {
+        return puzzleRepository.findById(12345678)
+                .orElseGet(() -> {
+                    Puzzle nuevo = new Puzzle();
+                    nuevo.setStfGameBoardStructure(12345678); // PK fija
+
+                    try {
+                        // Leer imagen por defecto de resources/static/images/default.jpg
+                        ClassPathResource resource = new ClassPathResource("static/images/default.jpg");
+                        byte[] defaultImage = Files.readAllBytes(resource.getFile().toPath());
+                        nuevo.setImage(defaultImage);
+                    } catch (IOException e) {
+                        System.out.println("No se pudo cargar la imagen por defecto: " + e.getMessage());
+                    }
+
+                    return puzzleRepository.save(nuevo);
+                });
+    }
+
+    public void reiniciarPuzzle() {
+        Puzzle puzzle = obtenerPuzzle();
+        puzzle.setStfGameBoardStructure(12345678); // volver al estado inicial
+        puzzleRepository.save(puzzle);
+    }
+
+    public void actualizarImagen(MultipartFile file) throws IOException {
+        Puzzle puzzle = obtenerPuzzle();
+        puzzle.setImage(file.getBytes());
+        puzzleRepository.save(puzzle);
+    }
+}
+
+
+
+
 package com.stfgames.model;
 
 import javax.persistence.*;
