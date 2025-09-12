@@ -1,5 +1,106 @@
 @GetMapping("/puzzle")
 public String mostrarPuzzle(Model model) {
+    Puzzle puzzle = puzzleService.obtenerPuzzle(); // trae la imagen
+    String base64Image = Base64.getEncoder().encodeToString(puzzle.getImage());
+
+    // Tablero desordenado (ejemplo)
+    int[] tablero = {1,2,3,4,5,6,7,0,8}; // 0 es el espacio vacío
+
+    model.addAttribute("imagen", base64Image);
+    model.addAttribute("tablero", tablero);
+    return "puzzle";
+}
+
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Rompecabezas</title>
+    <style>
+        .puzzle {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 2px;
+            margin: 20px;
+        }
+        .piece {
+            width: 100px;
+            height: 100px;
+            background-image: url('data:image/png;base64,[[${imagen}]]');
+            background-size: 300px 300px;
+            cursor: pointer;
+        }
+        .empty {
+            background: #eee;
+        }
+    </style>
+</head>
+<body>
+<h1>Rompecabezas deslizante</h1>
+
+<div id="puzzle" class="puzzle">
+    <div th:each="val,iter : ${tablero}"
+         th:id="'cell-' + ${iter.index}"
+         th:class="${val == 0} ? 'piece empty' : 'piece'"
+         th:attr="data-value=${val}"
+         th:style="${val != 0} ? 'background-position: calc(-100px * ' + ((${val}-1)%3) + ') calc(-100px * ' + ((${val}-1)/3) + ');' : ''">
+    </div>
+</div>
+
+<script>
+    const size = 3; // tablero 3x3
+    const puzzle = document.getElementById("puzzle");
+
+    puzzle.addEventListener("click", e => {
+        if (!e.target.classList.contains("piece")) return;
+
+        const cells = [...puzzle.children];
+        const index = cells.indexOf(e.target);
+        const emptyIndex = cells.findIndex(c => c.dataset.value === "0");
+
+        // calcular posición
+        const row = Math.floor(index / size), col = index % size;
+        const emptyRow = Math.floor(emptyIndex / size), emptyCol = emptyIndex % size;
+
+        // si son adyacentes, intercambiar
+        if ((Math.abs(row - emptyRow) + Math.abs(col - emptyCol)) === 1) {
+            const clicked = cells[index];
+            const empty = cells[emptyIndex];
+
+            // swap valores
+            [clicked.dataset.value, empty.dataset.value] = [empty.dataset.value, clicked.dataset.value];
+            [clicked.style.backgroundPosition, empty.style.backgroundPosition] = [empty.style.backgroundPosition, clicked.style.backgroundPosition];
+            clicked.classList.toggle("empty");
+            empty.classList.toggle("empty");
+        }
+
+        // comprobar victoria
+        const values = cells.map(c => c.dataset.value);
+        if (values.join("") === "123456780") {
+            alert("¡Felicidades, armaste el puzzle!");
+        }
+    });
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+@GetMapping("/puzzle")
+
+
+
+public String mostrarPuzzle(Model model) {
     Puzzle puzzle = puzzleService.obtenerPuzzle(); // tu entidad con imagen y board
     String base64Image = Base64.getEncoder().encodeToString(puzzle.getImage());
 
