@@ -254,3 +254,44 @@ public class PuzzleDTO {
         this.image = image;
     }
 }
+
+
+
+package com.stfgames.controller;
+
+import com.stfgames.dto.PuzzleDTO;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+@Controller
+public class PuzzleController {
+
+    private PuzzleDTO puzzle = new PuzzleDTO();
+
+    @GetMapping("/puzzle")
+    public String mostrarPuzzle(Model model) {
+        if (puzzle.getStfGameBoardStructure() == null) {
+            puzzle.setStfGameBoardStructure("1,2,3,4,5,6,7,8, "); // estado inicial (3x3)
+            puzzle.setImage("/images/default.jpg"); // imagen por defecto
+        }
+        model.addAttribute("puzzle", puzzle);
+        return "puzzle";
+    }
+
+    @PostMapping("/reiniciar")
+    public String reiniciarPuzzle(RedirectAttributes redirectAttributes) {
+        puzzle.setStfGameBoardStructure("1,2,3,4,5,6,7,8, ");
+        redirectAttributes.addFlashAttribute("mensaje", "¡Juego reiniciado!");
+        return "redirect:/puzzle";
+    }
+
+    @PostMapping("/subirImagen")
+    public String subirImagen(String nuevaImagen, RedirectAttributes redirectAttributes) {
+        puzzle.setImage(nuevaImagen); // aquí deberías manejar la carga real de imagen
+        redirectAttributes.addFlashAttribute("mensaje", "Imagen actualizada correctamente.");
+        return "redirect:/puzzle";
+    }
+}
