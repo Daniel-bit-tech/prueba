@@ -1,3 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Rompecabezas</title>
+</head>
+<body>
+
+<!-- Fragmento de cabecera -->
+<div th:replace="fragments :: header"></div>
+
+<!-- Fragmento de mensaje -->
+<div th:replace="fragments :: mensaje"></div>
+
+<!-- Mostrar imagen -->
+<div th:if="${puzzleDTO.imageBase64}">
+    <img th:src="'data:image/jpeg;base64,' + ${puzzleDTO.imageBase64}" width="200"/>
+</div>
+
+<!-- Estado del tablero -->
+<p><strong>Estado del tablero (INT):</strong> 
+   <span th:text="${puzzleDTO.stfGameBoardStructure}"></span>
+</p>
+
+<!-- Botón reiniciar -->
+<form th:action="@{/reiniciar}" method="post">
+    <button type="submit">Reiniciar juego</button>
+</form>
+
+<!-- Subir imagen -->
+<form th:action="@{/subirImagen}" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" accept="image/jpeg"/>
+    <button type="submit">Actualizar imagen</button>
+</form>
+
+</body>
+</html>
+
+
+
 package com.stfgames.controller;
 
 import com.stfgames.dto.PuzzleDTO;
