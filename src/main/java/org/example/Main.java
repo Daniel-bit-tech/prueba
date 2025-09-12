@@ -1,3 +1,16 @@
+package com.stfgames.repository;
+
+import com.stfgames.model.Puzzle;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface PuzzleRepository extends JpaRepository<Puzzle, Long> {
+}
+
+
+
+
+
+
 package com.stfgames.model;
 
 import javax.persistence.*;
