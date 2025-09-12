@@ -1,3 +1,67 @@
+package com.stfgames.controller;
+
+import com.stfgames.dto.PuzzleDTO;
+import com.stfgames.model.Puzzle;
+import com.stfgames.service.PuzzleService;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.io.IOException;
+import java.util.Base64;
+
+@Controller
+public class PuzzleController {
+
+    private final PuzzleService puzzleService;
+
+    public PuzzleController(PuzzleService puzzleService) {
+        this.puzzleService = puzzleService;
+    }
+
+    @GetMapping("/puzzle")
+    public String mostrarPuzzle(Model model) {
+        Puzzle puzzle = puzzleService.obtenerPuzzle();
+
+        // Convertimos a DTO
+        PuzzleDTO dto = new PuzzleDTO();
+        dto.setStfGameBoardStructure(puzzle.getStfGameBoardStructure());
+
+        if (puzzle.getImage() != null) {
+            String base64 = Base64.getEncoder().encodeToString(puzzle.getImage());
+            dto.setImageBase64(base64);
+        }
+
+        model.addAttribute("puzzleDTO", dto);
+        return "puzzle";
+    }
+
+    @PostMapping("/reiniciar")
+    public String reiniciarPuzzle(RedirectAttributes redirectAttributes) {
+        puzzleService.reiniciarPuzzle();
+        redirectAttributes.addFlashAttribute("mensaje", "¡Juego reiniciado con éxito!");
+        return "redirect:/puzzle";
+    }
+
+    @PostMapping("/subirImagen")
+    public String subirImagen(@RequestParam("file") MultipartFile file,
+                              RedirectAttributes redirectAttributes) {
+        try {
+            puzzleService.actualizarImagen(file);
+            redirectAttributes.addFlashAttribute("mensaje", "Imagen actualizada correctamente.");
+        } catch (IOException e) {
+            redirectAttributes.addFlashAttribute("mensaje", "Error al subir la imagen.");
+        }
+        return "redirect:/puzzle";
+    }
+
+
+
+
 package com.stfgames.dto;
 
 public class PuzzleDTO {
